@@ -1,0 +1,25 @@
+#simulation	pace_factor	algorithm	greentime/factor	seed	
+#simple_cross	1	smartDelta	5	42
+#simple_cross	1	smart	5	42
+#simple_cross	1	static	1.0	42
+#simple_cross	1	static	2.0	42
+#
+#simple_cross_with_left	3	smartDelta	5	42
+#simple_cross_with_left	3	smart	10	42
+#simple_cross_with_left	3	static	1.0	42
+#simple_cross_with_left	3	static	2.0	42
+#simple_cross_with_left	3	static	3.0	42
+#
+#simple_cross_with_left	2	smartDelta	5	42
+#simple_cross_with_left	2	static	1.0	42
+#simple_cross_with_left	2	static	2.0	42
+#simple_cross_with_left	2	static	3.0	42
+#
+raul_valenberg_habarzel	1	smartDelta	5	42
+#raul_valenberg_habarzel	1	static	0.2	42
+#raul_valenberg_habarzel	1	static	0.5	42
+raul_valenberg_habarzel	1	static	1.0	42
+#raul_valenberg_habarzel	1	static	2.0	42
+#
+#raul_valenberg_habarzel	2	smartDelta	5	42
+#raul_valenberg_habarzel	2	static	1.0	42
