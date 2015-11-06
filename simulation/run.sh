@@ -1,6 +1,6 @@
-basedir=~/code/trafficlight/workspace 
+basedir=$(dirname $0)
 now=`date +"%Y_%m_%d_%H-%M-%S"` 
-export PYTHONPATH=~/code/trafficlight/sumo-0.24.0/tools 
+export PYTHONPATH=/home/ohad/code/trafficlight/sumo-0.24.0/tools
 
 cd $basedir
 old_IFS=$IFS
@@ -14,8 +14,9 @@ do
 	seed=$(echo $line | cut -f5)
 	
 	cd $basedir 
+	mkdir -p $basedir/logs
 	log_file=$basedir/logs/"$sim"_"$algo"_seed_"$seed"_time_"$now".log
-	./runner.py --nogui --simulation=$sim --greentime=$greentime --seed=$seed --algo=$algo --pace_factor=$pace_factor > $log_file 2>&1
+	python runner.py --nogui --simulation=$sim --greentime=$greentime --seed=$seed --algo=$algo --pace_factor=$pace_factor > $log_file 2>&1
 	cd logs
 	grep "Totals" $log_file
 	
