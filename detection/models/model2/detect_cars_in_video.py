@@ -85,9 +85,10 @@ if capture:
     
         ret, frame0 = capture.read()
 
-        frame0 = cv2.transpose(frame0)
+        #frame0 = cv2.transpose(frame0)
         #print frame0.shape
-        frame2 = np.array(frame0[800:1500:1,400:1080:1])
+        frame2 = np.array(frame0[800:1500:1,100:800:1])
+        #frame2 = frame0
 
         if ret:
         
