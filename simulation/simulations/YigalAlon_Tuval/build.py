@@ -40,4 +40,3 @@ def getPossiblePrograms():
     return [("GGGrrrrr", 20), ("GGrrrGGG", 70), ("rrrGGrrr", 20)]
 
     
-        

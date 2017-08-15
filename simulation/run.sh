@@ -1,12 +1,9 @@
-<<<<<<< HEAD
-basedir=/Users/oraviv/git/trafficlight/simulation
-now=`date +"%Y_%m_%d_%H-%M-%S"` 
-export PYTHONPATH=/Users/oraviv/git/trafficlight/simulation/sumo-0.24.0/tools
-=======
-basedir=$(dirname $0)
-now=`date +"%Y_%m_%d_%H-%M-%S"` 
-export PYTHONPATH=/home/ohad/code/trafficlight/sumo-0.24.0/tools
->>>>>>> 7f621e2f133608630e75092b67dbe454b07e346b
+#!/usr/bin/env bash
+
+basedir=$( cd $(dirname $0) ; pwd -P )
+now=`date +"%Y_%m_%d_%H-%M-%S"`
+#export PYTHONPATH=~/sumo/sumo-svn/tools
+export SUMO_HOME=~/sumo/sumo-svn
 
 cd $basedir
 old_IFS=$IFS
@@ -22,35 +19,11 @@ do
 	cd $basedir 
 	mkdir -p $basedir/logs
 	log_file=$basedir/logs/"$sim"_"$algo"_seed_"$seed"_time_"$now".log
-<<<<<<< HEAD
-	./runner.py --simulation=$sim --greentime=$greentime --seed=$seed --algo=$algo --pace_factor=$pace_factor > $log_file 2>&1
-=======
+#    echo python runner.py --simulation=$sim --greentime=$greentime --seed=$seed --algo=$algo --pace_factor=$pace_factor
 	python runner.py --nogui --simulation=$sim --greentime=$greentime --seed=$seed --algo=$algo --pace_factor=$pace_factor > $log_file 2>&1
->>>>>>> 7f621e2f133608630e75092b67dbe454b07e346b
-	cd logs
+#	python runner.py --simulation=$sim --greentime=$greentime --seed=$seed --algo=$algo --pace_factor=$pace_factor > $log_file 2>&1
 	grep "Totals" $log_file
 	
 done          
 IFS=$old_IFS     # restore default field separator 
 
-
-#cd $basedir 
-#log_file=$basedir/logs/run_"$now".log
-#./runner.py --nogui --algo=smartDelta "$@"> $log_file 2>&1
-#cd logs
-#grep "Totals" $log_file
-#
-#cd $basedir 
-#log_file=$basedir/logs/run_"$now".log
-#./runner.py --nogui --algo=smart "$@"> $log_file 2>&1
-#cd logs
-#grep "Totals" $log_file
-#
-# statics
-#for t in {5,10,15,20,30}; do 
-#	cd $basedir 
-#	log_file=$basedir/logs/run_"$now".log
-#	./runner.py --nogui --algo=static --greentime=$t "$@"> $log_file 2>&1
-#	cd logs
-#	grep "Totals" $log_file 
-#done

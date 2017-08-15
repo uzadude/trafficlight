@@ -25,24 +25,30 @@ import sys
 import optparse
 import subprocess
 import random
-from algos import static, smart
 
 # we need to import python modules from the $SUMO_HOME/tools directory
 # try:
-#     sys.path.append(os.path.join(os.path.dirname(
-#         __file__), '..', '..', '..', '..', "tools"))  # tutorial in tests
-#     sys.path.append(os.path.join(os.environ.get("SUMO_HOME", os.path.join(
-#         os.path.dirname(__file__), "..", "..", "..")), "tools"))  # tutorial in docs
-from sumolib import checkBinary
+# sys.path.append(os.path.join(os.path.dirname(
+#     __file__), '..', '..', '..', '..', "tools"))  # tutorial in tests
+# sys.path.append(os.path.join(os.environ.get("SUMO_HOME", os.path.join(
+#     os.path.dirname(__file__), "..", "..", "..")), "tools"))  # tutorial in docs
+sumo_home = os.environ.get("SUMO_HOME")
+a = os.path.join(sumo_home, "tools")
+sys.path.append(a)
+
 # except ImportError:
 #     sys.exit(
 #         "please declare environment variable 'SUMO_HOME' as the root directory of your sumo installation (it should contain folders 'bin', 'tools' and 'docs')")
 
+from algos import static, smart
+from sumolib import checkBinary
+
 import traci
 import sets
 from algos.smartDelta import SmartDelta
-#from simulations.simple_cross import build
-#import simulations
+
+# from simulations.simple_cross import build
+# import simulations
 # the port used for communicating with your sumo instance
 PORT = 8873
 
@@ -50,26 +56,25 @@ PORT = 8873
 def run(options, simulation):
     """execute the TraCI control loop"""
     traci.init(PORT)
-    
+
     possible_programs = simulation.getPossiblePrograms()
-    
-    if options.algo=='static':
+
+    if options.algo == 'static':
         algo = static.Static("0", possible_programs, options.greentime)
         title = 'static-' + str(options.greentime)
-    elif options.algo=='smart':
+    elif options.algo == 'smart':
         algo = smart.SmartTL("0", possible_programs, options.greentime)
         title = 'smart-' + str(options.greentime)
-    elif options.algo=='smartDelta':
+    elif options.algo == 'smartDelta':
         algo = SmartDelta("0", possible_programs, options.greentime)
         title = 'smartDelta-' + str(options.greentime)
-    
-    
+
     step = 0
-    cars_lst={}
+    cars_lst = {}
     while traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
         print '========================================================================================================================================================'
-        print 'step',step
+        print 'step', step
         stepWaitingTime = 0
         cnt_waiting_cars = 0
         cnt_cars = 0
@@ -78,19 +83,23 @@ def run(options, simulation):
             w = traci.vehicle.getWaitingTime(car)
             cnt_cars += 1
             if not car in cars_lst:
-                cars_lst[car]=0
-            if w>0.01:
-                #print 'car: ' + car, 'wait time:' + str(w)
-                cnt_waiting_cars+=1
-                stepWaitingTime+=w
-                cars_lst[car]+=1
-        print 'XX step:', step, 'stepWaitingTime:',stepWaitingTime,'cnt_waiting_cars:',cnt_waiting_cars,'avgWaitingTime:',stepWaitingTime/(cnt_cars+0.001),'cnt_cars:',cnt_cars
+                cars_lst[car] = 0
+            if w > 0.01:
+                # print 'car: ' + car, 'wait time:' + str(w)
+                cnt_waiting_cars += 1
+                stepWaitingTime += w
+                cars_lst[car] += 1
+        print 'XX step:', step, 'stepWaitingTime:', stepWaitingTime, 'cnt_waiting_cars:', cnt_waiting_cars, 'avgWaitingTime:', stepWaitingTime / (
+        cnt_cars + 0.001), 'cnt_cars:', cnt_cars
 
         traci.trafficlights.setRedYellowGreenState("0", algo.getNextProgram())
         step += 1
-    
-    #print 'YY seed:',options.seed,'title:',title,'Totals steps:', step, 'totalWaitingTime:',sum([cars_lst[x] for x in cars_lst.keys()]),'total_cnt_waiting_cars:',sum([1 for x in cars_lst.keys() if cars_lst[x]>0.01]),'total_cnt_cars:',len(cars_lst)    
-    print("YY simulation: %-20s pace_factor: %2d seed: %d algo: %-16s Totals steps: %5d totalWaitingTime: %5d total_cnt_waiting_cars: %5d total_cnt_cars: %5d" % (options.simulation, options.pace_factor , options.seed, title, step, sum([cars_lst[x] for x in cars_lst.keys()]), sum([1 for x in cars_lst.keys() if cars_lst[x]>0.01]), len(cars_lst)))
+
+    # print 'YY seed:',options.seed,'title:',title,'Totals steps:', step, 'totalWaitingTime:',sum([cars_lst[x] for x in cars_lst.keys()]),'total_cnt_waiting_cars:',sum([1 for x in cars_lst.keys() if cars_lst[x]>0.01]),'total_cnt_cars:',len(cars_lst)
+    print(
+    "YY simulation: %-20s pace_factor: %2d seed: %d algo: %-16s Totals steps: %5d totalWaitingTime: %5d total_cnt_waiting_cars: %5d total_cnt_cars: %5d" % (
+    options.simulation, options.pace_factor, options.seed, title, step, sum([cars_lst[x] for x in cars_lst.keys()]),
+    sum([1 for x in cars_lst.keys() if cars_lst[x] > 0.01]), len(cars_lst)))
     traci.close()
     sys.stdout.flush()
 
@@ -123,14 +132,19 @@ if __name__ == "__main__":
 
     print sumoBinary
 
-    simulation = __import__("simulations.%s.build" % options.simulation, fromlist=["simulations.%s" % options.simulation])
-    
+    simulation = __import__("simulations.%s.build" % options.simulation,
+                            fromlist=["simulations.%s" % options.simulation])
+
     # first, generate the route file for this simulation
     simulation.generate_routefile(options.seed, options.steps, options.pace_factor)
 
     # this is the normal way of using traci. sumo is started as a
     # subprocess and then the python script connects and runs
-    sumoProcess = subprocess.Popen([sumoBinary, "-c", "/Users/oraviv/git/trafficlight/simulation/simulations/%s/cross.sumocfg" % options.simulation, "--remote-port", str(PORT)], stdout=sys.stdout, stderr=sys.stderr)
-    
+    process_args = [sumoBinary, "-c", "simulations/%s/cross.sumocfg" % options.simulation, "--remote-port",
+                    str(PORT)]
+    print "Running SUMO:", " ".join(process_args)
+    sumoProcess = subprocess.Popen(
+        process_args, stdout=sys.stdout, stderr=sys.stderr)
+
     run(options, simulation)
     sumoProcess.wait()

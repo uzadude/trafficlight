@@ -94,5 +94,3 @@ class SmartDelta(Smart):
             t = t1 + (x-x1)/wanted_v
 
         return t
-              
-        

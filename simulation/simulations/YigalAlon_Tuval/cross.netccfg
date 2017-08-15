@@ -12,6 +12,10 @@
         <output-file value="gen/cross.net.xml"/>
     </output>
 
+    <gui_only>
+        <gui-settings-file value="cross.settings.xml"/>
+    </gui_only>
+
     <report>
         <verbose value="true"/>
     </report>

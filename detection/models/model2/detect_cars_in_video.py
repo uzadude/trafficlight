@@ -2,7 +2,7 @@
 import cv2
 import numpy as np
 import datetime
-#capture = cv2.VideoCapture('../../imgs/VID_20150916_165227.mp4')
+# capture = cv2.VideoCapture('../../imgs/VID_20150916_165227.mp4')
 capture = cv2.VideoCapture('../../imgs/VID_20151104_114549.mp4')
 #capture = cv2.VideoCapture('../../imgs/VID_20151104_140110.mp4')
 
@@ -29,9 +29,9 @@ def simpleBGSubtruct(frame2):
     
     # threshold the delta image, dilate the thresholded image to fill
     # in holes, then find contours on thresholded image
-    thresh = cv2.threshold(frameDelta, 10, 255, cv2.THRESH_BINARY)[1]
+    thresh = cv2.threshold(frameDelta, 5, 255, cv2.THRESH_BINARY)[1]
     thresh = cv2.dilate(thresh, None, iterations=2)
-    (_, cnts, _) = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+    cnts, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
     
     # loop over the contours
     for c in cnts:
@@ -55,17 +55,18 @@ def simpleBGSubtruct(frame2):
 
 
 
-#backsub = cv2.BackgroundSubtractorMOG()
-backsub = cv2.createBackgroundSubtractorMOG2()
-#backsub = cv2.createBackgroundSubtractorKNN()
+# backsub = cv2.BackgroundSubtractorMOG()
+backsub = cv2.BackgroundSubtractorMOG2()
+# backsub = cv2.createBackgroundSubtractorMOG2()
+# backsub = cv2.createBackgroundSubtractorKNN()
 best_id = 0
 
 def advancedBGSubtruct(frame2):
     global best_id
     fgmask = backsub.apply(frame2, None, 0.01)
     
-    #_, contours, hierarchy = cv2.findContours(fgmask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    _, contours, hierarchy = cv2.findContours(fgmask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # _, contours, hierarchy = cv2.findContours(fgmask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(fgmask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     try: hierarchy = hierarchy[0]
     except: hierarchy = []
     for contour, hier in zip(contours, hierarchy):
@@ -75,9 +76,11 @@ def advancedBGSubtruct(frame2):
             #best_id += 1
             cv2.rectangle(frame2, (x, y), (x + w, y + h), (255, 0, 0), 2)
             #cv2.putText(frame2, str(best_id), (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-    #print(best_id)        
+    #print(best_id)
+
     cv2.imshow("Advanced", frame2)
-    cv2.imshow("background sub", fgmask)    
+    cv2.imshow("background sub", fgmask)
+
     
 i = 0
 if capture:
@@ -85,14 +88,14 @@ if capture:
     
         ret, frame0 = capture.read()
 
-        #frame0 = cv2.transpose(frame0)
+        frame0 = cv2.transpose(frame0)
         #print frame0.shape
-        frame2 = np.array(frame0[800:1500:1,100:800:1])
+        frame2 = np.array(frame0[800:1500:1,500:1800:1])
         #frame2 = frame0
 
         if ret:
         
-            #simpleBGSubtruct(frame2.copy())
+            # simpleBGSubtruct(frame2.copy())
             advancedBGSubtruct(frame2.copy())
            
             
